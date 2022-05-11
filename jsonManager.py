@@ -25,11 +25,7 @@ def open_json(file_name):
         print("File, " + file_name + " not found.")
         return None
 
-    json_data = file_name.read()
-
-    file_name.close()
-
-    data = jsonpickle.decode(json_data)
+    data = jsonpickle.decode(file_name.read())
 
     return data
 
@@ -38,6 +34,9 @@ def save_json(file_name, data):
     """
     Save a json file.
     """
+
     file_name = open(file_name, "w")
+
     file_name.write(pretty_json(jsonpickle.encode(data)))
+
     file_name.close()

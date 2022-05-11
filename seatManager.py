@@ -1,4 +1,5 @@
 import string
+import jsonManager
 
 
 def create_seat(row, column):
@@ -36,9 +37,20 @@ def create_seatsDict(rows, columns):
             else:
                 curRow += 1
                 curColumn = 0
-                # seats_plan[i] = create_seat(curRow, curColumn)
+                seats_plan[i] = create_seat(curRow, curColumn)
+                curColumn += 1
+
+
+    save_seats(seats_plan)
 
     return seats_plan
+
+def save_seats(seats_plan):
+    """
+    Save the seats.
+    """
+
+    jsonManager.save_json("seats.json", seats_plan)
 
 
 def print_seats(seats_plan,rows,columns):
@@ -52,19 +64,25 @@ def print_seats(seats_plan,rows,columns):
     
     displayString = " 0 "
     for i in range(len(seats_plan)):
-        if curRow < rows+1:
-            if curCol < columns:
-                displayString += seats_plan[i]["status"]
+        # print(i)
+
+        num = str(i)
+        if curRow < rows: 
+            if curCol < columns-1:
+                displayString += seats_plan[num]["status"]
+                
                 curCol += 1
             else:
+                displayString += seats_plan[num]["status"]
+
                 curRow += 1
                 curCol = 0
+                
                 print(displayString)
                 if curRow <= 9:
                     displayString = " " + str(curRow) + " "
                 else:
                     displayString = str(curRow) + " "
-
 
 
 def print_seats_status(seats_plan):
@@ -82,7 +100,6 @@ def seatManager():
     """
 
     rows = int(input("Enter the number of rows: "))
-    rows+=2
     columns = int(input("Enter the number of columns: "))
 
     seats_plan = create_seatsDict(rows, columns)
@@ -91,3 +108,15 @@ def seatManager():
 
     print(seats_plan)
     print_seats(seats_plan,rows,columns)
+
+
+
+
+def get_seats():
+    """
+    Get the seats.
+    """
+
+    seats_plan = jsonManager.open_json("seats.json")
+
+    return seats_plan
