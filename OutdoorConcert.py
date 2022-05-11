@@ -16,6 +16,7 @@ def Menu():
     print("---------------------------------------")
     print("[V] View availabe seats")
     print("[B] Buy a seat")
+    print("[C] Cancel seat")
     print("[S] Search for a friend")
     print("[D] Display all purchases")
     print("[Q] Quit")
@@ -27,7 +28,7 @@ def available_seats(seat_plan, start, end):
     Print the available seats.
     """
     for i in range(start, end):
-        if seat_plan[i]["status"] == "X":
+        if seat_plan[str(i)]["status"] == "X":
             return False
     return True
 
@@ -39,12 +40,19 @@ def purchase_seat(seat_plan, maxRows, maxColumns,user,name):
 
     selction = ""
 
-    amountOfTickets = int(input("Enter the number of tickets: "))
+    amountOfTickets = int(input("Enter the number of tickets[ Has to less than or equal to 26]: "))
+
+    if amountOfTickets == 0:
+        return seat_plan, user
 
     while selction != "Q":
         sm.print_seats(seat_plan, maxRows, maxColumns)
 
+
+
         row = int(input("Enter the row: "))
+
+
 
         # columnStart = ""
         # columnEnd = ""
@@ -68,7 +76,7 @@ def purchase_seat(seat_plan, maxRows, maxColumns,user,name):
                     do = False
 
         if available_seats(seat_plan, row, columnStart) and (row % 2 == 0 or row == 0):
-            for i in range(columnStart, columnEnd + 1):
+            for i in range(columnStart, columnEnd+1):
                 seat_plan[str(row * 26 + i)]["status"] = "X"
                 selction = "Q"
         else:
@@ -121,6 +129,53 @@ def printAllPurchases(user):
     print("Total: " + "$" + str(user["Profit"]))
 
 
+
+def search_friend(user):
+    """
+    Search for a friend.
+    """
+    print("---------------------------------------")
+    print("|        Search for a friend          |")
+    print("---------------------------------------")
+    name = input("Enter the name: ")
+    if name in user:
+        print("| Name: " + name)
+        print("| Seat: " + str(user[name]["seat"]["row"]) + " " + str(user[name]["seat"]["columnStart"]) + "-" + str(user[name]["seat"]["columnEnd"]))
+        print("---------------------------------------")
+    else:
+        print("| No friend found with that name.")
+        print("---------------------------------------")
+
+
+def cancel_purchase(user,seat_plan):
+    """
+    Cancel a purchase.
+    """
+    print("---------------------------------------")
+    print("|        Cancel a purchase            |")
+    print("---------------------------------------")
+    name = input("Enter your name: ")
+    if name in user:
+        print("| Name: " + name)
+        print("| Seat: " + str(user[name]["seat"]["row"]) + " " + str(user[name]["seat"]["columnStart"]) + "-" + str(user[name]["seat"]["columnEnd"]))
+        print("---------------------------------------")
+        do = True
+        while do == True:
+            choice = input("Are you sure you want to cancel your purchase? (Y/N): ")
+            choice = choice.upper()
+            if choice == "Y":
+                for i in range(user[name]["seat"]["columnStart"], user[name]["seat"]["columnEnd"]):
+                    seat_plan[str(user[name]["seat"]["row"] * 26 + i)]["status"] = "a"
+                    user["Profit"] = user["Profit"] - ((user[name]["orderCost"]-5.00)/1.0725)
+                del user[name]
+                do = False
+            elif choice == "N":
+                do = False
+            else:
+                print("Invalid input.")
+                do = True
+
+
 def main():
     maxRows = int(20)
     maxColumns = int(26)
@@ -148,9 +203,16 @@ def main():
 
             user =  newData[1]
 
-            print(user)
+            # print(user)
+
         if choice == "D":
             printAllPurchases(user)
+        if choice == "S":
+            search_friend(user)
+        if choice == "C":
+            cancel_purchase(user,seat_plan)
+
+
 
     
 
